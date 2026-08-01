@@ -1,0 +1,78 @@
+# Prometheus Configuration for Student Result Management System
+# Monitors Spring Boot instances, Redis, and MySQL
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'student-result-monitor'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           # - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  # - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Spring Boot Instance 1 metrics
+  - job_name: 'student-app-1'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+        labels:
+          instance: 'student-app-1'
+          service: 'student-result'
+
+  # Spring Boot Instance 2 metrics
+  - job_name: 'student-app-2'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8082']
+        labels:
+          instance: 'student-app-2'
+          service: 'student-result'
+
+  # Spring Boot Instance 3 metrics
+  - job_name: 'student-app-3'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8083']
+        labels:
+          instance: 'student-app-3'
+          service: 'student-result'
+
+  # Redis metrics (if using redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+        labels:
+          instance: 'redis-cache'
+          service: 'redis'
+
+  # MySQL metrics (if using mysqld_exporter)
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['mysql:3306']
+        labels:
+          instance: 'mysql-db'
+          service: 'mysql'
+
+  # HAProxy metrics (if using haproxy_exporter)
+  - job_name: 'haproxy'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['haproxy:8404']
+        labels:
+          instance: 'haproxy-lb'
+          service: 'load-balancer'

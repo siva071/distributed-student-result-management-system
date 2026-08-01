@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Balancer Dashboard - Distributed System Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>📊 Dashboard</h2>
+                <p class="subtitle">Distributed System Monitor</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <span class="icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="single-test">
+                    <span class="icon">🔍</span>
+                    <span>Single Test</span>
+                </a>
+                <a href="#" class="nav-item" data-section="bulk-test">
+                    <span class="icon">📦</span>
+                    <span>Bulk Test</span>
+                </a>
+                <a href="#" class="nav-item" data-section="logs">
+                    <span class="icon">📝</span>
+                    <span>Logs</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <span class="icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-indicator"></span>
+                <span class="status-text">Checking...</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section class="section active" id="dashboard">
+                <h1>Dashboard Overview</h1>
+                
+                <!-- Performance Cards -->
+                <div class="cards-grid">
+                    <div class="card glass">
+                        <div class="card-icon">✅</div>
+                        <div class="card-content">
+                            <h3>Completed</h3>
+                            <p class="card-value" id="completedCount">0</p>
+                        </div>
+                    </div>
+                    <div class="card glass">
+                        <div class="card-icon">❌</div>
+                        <div class="card-content">
+                            <h3>Failed</h3>
+                            <p class="card-value" id="failedCount">0</p>
+                        </div>
+                    </div>
+                    <div class="card glass">
+                        <div class="card-icon">⏱️</div>
+                        <div class="card-content">
+                            <h3>Average Time</h3>
+                            <p class="card-value" id="avgTime">0 ms</p>
+                        </div>
+                    </div>
+                    <div class="card glass">
+                        <div class="card-icon">🚀</div>
+                        <div class="card-content">
+                            <h3>Fastest</h3>
+                            <p class="card-value" id="fastestTime">0 ms</p>
+                        </div>
+                    </div>
+                    <div class="card glass">
+                        <div class="card-icon">🐌</div>
+                        <div class="card-content">
+                            <h3>Slowest</h3>
+                            <p class="card-value" id="slowestTime">0 ms</p>
+                        </div>
+                    </div>
+                    <div class="card glass">
+                        <div class="card-icon">📊</div>
+                        <div class="card-content">
+                            <h3>Requests/Sec</h3>
+                            <p class="card-value" id="rps">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Port Distribution -->
+                <div class="distribution-section">
+                    <h2>Port Distribution</h2>
+                    <div class="port-cards">
+                        <div class="port-card glass" id="port8081">
+                            <h3>Port 8081</h3>
+                            <p class="port-value" id="port8081Count">0</p>
+                            <p class="port-label">requests</p>
+                        </div>
+                        <div class="port-card glass" id="port8082">
+                            <h3>Port 8082</h3>
+                            <p class="port-value" id="port8082Count">0</p>
+                            <p class="port-label">requests</p>
+                        </div>
+                        <div class="port-card glass" id="port8083">
+                            <h3>Port 8083</h3>
+                            <p class="port-value" id="port8083Count">0</p>
+                            <p class="port-label">requests</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-section">
+                    <div class="chart-container glass">
+                        <h3>Requests by Instance</h3>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    <div class="chart-container glass">
+                        <h3>Distribution Percentage</h3>
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Architecture Visualization -->
+                <div class="architecture-section">
+                    <h2>Architecture Visualization</h2>
+                    <div class="architecture-diagram" id="architectureDiagram">
+                        <div class="arch-node user">
+                            <span class="node-icon">👤</span>
+                            <span class="node-label">User</span>
+                        </div>
+                        <div class="arch-arrow"></div>
+                        <div class="arch-node nginx">
+                            <span class="node-icon">🔄</span>
+                            <span class="node-label">NGINX</span>
+                        </div>
+                        <div class="arch-arrow"></div>
+                        <div class="arch-nodes-row">
+                            <div class="arch-node instance" id="inst8081">
+                                <span class="node-icon">🖥️</span>
+                                <span class="node-label">8081</span>
+                            </div>
+                            <div class="arch-node instance" id="inst8082">
+                                <span class="node-icon">🖥️</span>
+                                <span class="node-label">8082</span>
+                            </div>
+                            <div class="arch-node instance" id="inst8083">
+                                <span class="node-icon">🖥️</span>
+                                <span class="node-label">8083</span>
+                            </div>
+                        </div>
+                        <div class="arch-arrow"></div>
+                        <div class="arch-nodes-row">
+                            <div class="arch-node redis">
+                                <span class="node-icon">💾</span>
+                                <span class="node-label">Redis</span>
+                            </div>
+                            <div class="arch-node mysql">
+                                <span class="node-icon">🗄️</span>
+                                <span class="node-label">MySQL</span>
+                            </div>
+                        </div>
+                        <div class="request-dot" id="requestDot"></div>
+                    </div>
+                </div>
+
+                <!-- Health Monitor -->
+                <div class="health-section">
+                    <h2>Health Monitor</h2>
+                    <div class="health-cards">
+                        <div class="health-card glass" id="health8081">
+                            <h3>Instance 8081</h3>
+                            <p class="health-status" id="health8081Status">Checking...</p>
+                            <p class="health-time" id="health8081Time">-</p>
+                        </div>
+                        <div class="health-card glass" id="health8082">
+                            <h3>Instance 8082</h3>
+                            <p class="health-status" id="health8082Status">Checking...</p>
+                            <p class="health-time" id="health8082Time">-</p>
+                        </div>
+                        <div class="health-card glass" id="health8083">
+                            <h3>Instance 8083</h3>
+                            <p class="health-status" id="health8083Status">Checking...</p>
+                            <p class="health-time" id="health8083Time">-</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Single Test Section -->
+            <section class="section" id="single-test">
+                <h1>Single Request Test</h1>
+                <div class="test-container glass">
+                    <button class="btn btn-primary" id="singleTestBtn">
+                        <span class="btn-text">Send Request</span>
+                        <span class="btn-spinner"></span>
+                    </button>
+                    <div class="result-container" id="singleResult">
+                        <h3>Response</h3>
+                        <pre id="singleJson"></pre>
+                        <div class="result-details">
+                            <p><strong>Served By:</strong> <span id="singleServedBy">-</span></p>
+                            <p><strong>Instance:</strong> <span id="singleInstance">-</span></p>
+                            <p><strong>Hostname:</strong> <span id="singleHostname">-</span></p>
+                            <p><strong>Response Time:</strong> <span id="singleResponseTime">-</span></p>
+                            <p><strong>Current Time:</strong> <span id="singleCurrentTime">-</span></p>
+                            <p><strong>HTTP Status:</strong> <span id="singleStatus">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bulk Test Section -->
+            <section class="section" id="bulk-test">
+                <h1>Bulk Request Test</h1>
+                <div class="test-container glass">
+                    <div class="bulk-controls">
+                        <label>Number of Requests:</label>
+                        <input type="number" id="customRequestCount" value="100" min="1" max="10000">
+                        <div class="preset-buttons">
+                            <button class="btn btn-secondary" data-count="10">10</button>
+                            <button class="btn btn-secondary" data-count="50">50</button>
+                            <button class="btn btn-secondary" data-count="100">100</button>
+                            <button class="btn btn-secondary" data-count="500">500</button>
+                            <button class="btn btn-secondary" data-count="1000">1000</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="bulkTestBtn">
+                        <span class="btn-text">Run Test</span>
+                        <span class="btn-spinner"></span>
+                    </button>
+                    <div class="progress-container" id="bulkProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progressCurrent">0</span> / <span id="progressTotal">0</span>
+                            <span class="progress-eta" id="progressEta">ETA: --</span>
+                        </div>
+                    </div>
+                    <div class="bulk-results" id="bulkResults" style="display: none;">
+                        <h3>Results</h3>
+                        <div class="result-stats">
+                            <p><strong>Completed:</strong> <span id="bulkCompleted">0</span></p>
+                            <p><strong>Failed:</strong> <span id="bulkFailed">0</span></p>
+                            <p><strong>Average Response Time:</strong> <span id="bulkAvgTime">0</span> ms</p>
+                            <p><strong>Minimum Response Time:</strong> <span id="bulkMinTime">0</span> ms</p>
+                            <p><strong>Maximum Response Time:</strong> <span id="bulkMaxTime">0</span> ms</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logs Section -->
+            <section class="section" id="logs">
+                <h1>Live Request Logs</h1>
+                <div class="logs-container glass">
+                    <div class="logs-controls">
+                        <button class="btn btn-secondary" id="clearLogs">Clear Logs</button>
+                        <button class="btn btn-secondary" id="exportLogsCsv">Export CSV</button>
+                        <button class="btn btn-secondary" id="exportLogsJson">Export JSON</button>
+                    </div>
+                    <div class="logs-window" id="logsWindow">
+                        <div class="log-entry">
+                            <span class="log-time">--:--:--</span>
+                            <span class="log-request">--</span>
+                            <span class="log-port">--</span>
+                            <span class="log-status">--</span>
+                            <span class="log-time-val">--</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="section" id="analytics">
+                <h1>Analytics</h1>
+                <div class="charts-section">
+                    <div class="chart-container glass">
+                        <h3>Response Times Over Time</h3>
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section class="section" id="settings">
+                <h1>Settings</h1>
+                <div class="settings-container glass">
+                    <div class="setting-item">
+                        <label for="baseUrl">Base URL:</label>
+                        <input type="text" id="baseUrl" value="http://localhost">
+                        <button class="btn btn-primary" id="saveSettings">Save</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>Connection Status:</label>
+                        <span class="connection-badge" id="settingsConnectionStatus">Checking...</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Auto-refresh Health:</label>
+                        <input type="checkbox" id="autoRefreshHealth" checked>
+                        <span class="setting-description">Check instance health every 5 seconds</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="utils.js?v=7"></script>
+    <script src="api.js?v=7"></script>
+    <script src="charts.js?v=7"></script>
+    <script src="script.js?v=7"></script>
+</body>
+</html>

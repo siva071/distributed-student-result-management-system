@@ -1,0 +1,73 @@
+# Java / Spring Boot
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.idea/
+*.log
+*.classpath
+.project
+.settings/
+.vscode/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Docker
+nginx-logs/
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sql
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+*.swp
+*.swo
+*~
+.project
+.classpath
+.factorypath
+
+# Build
+build/
+dist/
+out/
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Application specific
+nginx-logs/
